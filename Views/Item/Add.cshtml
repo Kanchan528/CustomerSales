@@ -1,0 +1,56 @@
+﻿@model CustomerSales.ViewModel.ItemViewModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h1>Add</h1>
+@using (Html.BeginForm())
+{
+    <div class="col-md-12">
+        <div>
+            <label>Item Name</label>
+            @Html.TextBoxFor(x => x.ItemName, new { @class = "form-control", @placeholder = "Enter name" })
+            @Html.ValidationMessageFor(x => x.ItemName)
+        </div>
+        <div>
+            <label>Item Description</label>
+            @Html.TextBoxFor(x => x.ItemDescription, new { @class = "form-control", @placeholder = "Enter description" })
+            @Html.ValidationMessageFor(x => x.ItemDescription)
+        </div>
+        <div>
+            <label>Item Quantity</label>
+            @Html.TextBoxFor(x => x.ItemQuantity, new { @class = "form-control", @placeholder = "Enter quantity" })
+            @Html.ValidationMessageFor(x => x.ItemQuantity)
+        </div>
+        <div>
+            <label>Item Rate</label>
+            @Html.TextBoxFor(x => x.ItemRate, new { @class = "form-control", @placeholder = "Enter rate" })
+            @Html.ValidationMessageFor(x => x.ItemRate)
+        </div> 
+        <div>
+            <label>Rate Description</label>
+            @Html.TextBoxFor(x => x.ItemRateDescription, new { @class = "form-control", @placeholder = "Enter description" })
+            @Html.ValidationMessageFor(x => x.ItemRateDescription)
+        </div> 
+        <div>
+            <label>Item Total</label>
+            @Html.TextBoxFor(x => x.ItemTotal, new { @class = "form-control", @placeholder = "Enter total item" })
+            @Html.ValidationMessageFor(x => x.ItemTotal)
+        </div>
+        <br />
+        <div>
+            <button type="submit" class="btn btn-success">
+                @if (Model.Id == 0)
+                {
+                    <span>Add</span>
+                }
+                else
+                {
+                    <span>Update</span>
+                }
+            </button>
+        </div>
+    </div>
+}
+<a href="@Url.Action("Index","Item")">Back</a>

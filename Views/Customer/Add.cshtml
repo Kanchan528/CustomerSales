@@ -1,0 +1,41 @@
+﻿@model CustomerSales.ViewModel.CustomerViewModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h1>Add</h1>
+@using (Html.BeginForm())
+{
+    <div class="col-md-12">
+        <div>
+            <label>Name</label>
+            @Html.TextBoxFor(x => x.CustomerName, new { @class = "form-control", @placeholder = "Enter name" })
+            @Html.ValidationMessageFor(x => x.CustomerName)
+        </div>
+        <div>
+            <label>Address</label>
+            @Html.TextBoxFor(x => x.CustomerAddress, new { @class = "form-control", @placeholder = "Enter address" })
+            @Html.ValidationMessageFor(x => x.CustomerAddress)
+        </div>
+        <div>
+            <label>Phone Number</label>
+            @Html.TextBoxFor(x => x.ContactNumber, new { @class = "form-control", @placeholder = "Enter address" })
+            @Html.ValidationMessageFor(x => x.ContactNumber)
+        </div>
+        <br />
+        <div>
+            <button type="submit" class="btn btn-success">
+                @if (Model.Id == 0)
+                {
+                    <span>Add</span>
+                }
+                else
+                {
+                    <span>Update</span>
+                }
+            </button>
+        </div>
+    </div>
+}
+<a href="@Url.Action("Index","Customer")">Back</a>

@@ -1,0 +1,207 @@
+﻿@model CustomerSales.ViewModel.SalesViewModel
+@{
+    ViewData["Title"] = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Add</h1>
+@using (Html.BeginForm())
+{
+    <div class="col-md-12">
+        <div>
+            <label>Sales No</label>
+            <input type="text" id="SalesNo" class="form-control" placeholder="0" />
+        </div>
+        <td>
+            @Html.DropDownList("Customer", (IEnumerable<SelectListItem>)ViewBag.Customer,
+           "Select Item", new { @class = "form-control m-input", @id = "CustomerId", })
+
+        </td>
+
+        <div>
+            <table class="table" id="AddItem">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>per Price</th>
+                        <th>Total Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                        <td>
+                            @Html.DropDownList("Items", (IEnumerable<SelectListItem>)ViewBag.Items,
+                           "Select Item", new { @class = "form-control m-input", @id = "ItemId", @onchange = "GetItemPrice()" })
+
+                        </td>
+                        <td>
+                            <input type="text" id="Quantity" class="form-control m-input" placeholder="0" onkeyup="Multitpy()" />
+                        </td>
+                        <td>
+                            <input type="text" id="ItemPrice" class="form-control m-input" placeholder="0" readonly />
+                        </td>
+                        <td>
+                            <input type="text" id="TotalPrice" class="form-control m-input" placeholder="0" readonly />
+                        </td>
+                        <td>
+                            <a onclick="PushSalesItem();">
+                                Add
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div>
+            <label>Gross Amount</label>
+            <input type="text" id="NetAmount" class="form-control" placeholder="0" readonly />
+
+        </div>
+        <div>
+            <label>Discount Amount</label>
+            <input type="text" id="Discount" class="form-control" placeholder="0" onkeyup="GetDiscountedAmount()" />
+        </div>
+        <div>
+            <label>Total Amount</label>
+            <input type="text" id="TotalSales" class="form-control" placeholder="0" readonly />
+        </div>
+        <br />
+        <div>
+            <a onclick="saveData()" class="btn btn-success">
+                @if (Model.Master.Id == 0)
+                {
+                    <span>Add</span>
+                }
+                else
+                {
+                    <span>Update</span>
+                }
+            </a>
+        </div>
+    </div>
+
+    <a href="@Url.Action("Index","Sales")">Back</a>
+}
+
+@section Scripts{
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.js"></script>
+    <script type="text/javascript">
+        var QuantityinStock = 0;
+        var SalesDetails = [];
+        function GetItemPrice() {
+            var itemId = $("#ItemId").val();
+            $.getJSON("/Sales/GetItem?id=" + itemId, function (result) {
+                $("#ItemPrice").val(result.price);
+                QuantityinStock = result.quantity;
+            });
+        }
+
+        //function GetCustomer() {
+        //    var customerId = $("#CustomerId").val();
+        //    $.getJSON("/Sales/GetCustomer?id=" + customerId, function (result) {
+        //        $("#CustomerName").val(result.name);
+        //    });
+        //}
+        function Multitpy() {
+            var Quantity = $("#Quantity").val();
+            var ItemPrice = $("#ItemPrice").val();
+            var TotalPrice = (Quantity * ItemPrice);
+            $("#TotalPrice").val(TotalPrice);
+        }
+
+        function SalesDetailsModel(item) {
+            var self = this;
+            item = item || {};
+            self.ItemId = ko.observable(item.ItemId || 0);
+            self.Quantity = ko.observable(item.Quantity || 0);
+            self.ItemPrice = ko.observable(item.ItemPrice || 0);
+            self.TotalPrice = ko.observable(item.TotalPrice || 0);
+        }
+        var self = this;
+        self.sales = ko.observable();
+        self.SalesList = ko.observableArray([]);
+
+        function PushSalesItem() {
+
+            var itemId = $("#ItemId").val();
+            if (itemId == 0 || itemId == undefined) {
+                return alert("Select Item");
+            }
+            var Quantity = $("#Quantity").val();
+            var ItemPrice = $("#ItemPrice").val();
+            var TotalPrice = $("#TotalPrice").val();
+            var ItemName = $("#ItemId option:selected").text();
+            var tr = $(`<tr> <td> ${ItemName}</td>
+                    <td> ${Quantity} </td>
+                    <td> ${ItemPrice} </td>
+                    <td> ${TotalPrice}</td>
+                    <td> <a id="DeleteButton"> Delete</a></td></tr>`);
+            $('#AddItem').append(tr);
+            self.SalesList.push(ko.toJS(new SalesDetailsModel(
+                {
+                    ItemId: itemId,
+                    Quantity: Quantity,
+                    ItemPrice: ItemPrice,
+                    TotalPrice: TotalPrice
+                })));
+            GetTotalAmount();
+            $("#ItemId").val("");
+            $("#Quantity").val("");
+            $("#ItemPrice").val("");
+            $("#TotalPrice").val("");
+        }
+        function GetTotalAmount() {
+            debugger;
+            var amount = 0;
+            for (var i = 0; i < self.SalesList().length; i++) {
+                //amount = amount + self.SalesList()[i].TotalPrice;
+                amount += parseFloat(self.SalesList()[i].TotalPrice);
+            }
+            $("#NetAmount").val(amount);
+            $("#NetAmount").text(amount);
+            $("#TotalSales").val(amount);
+            $("#TotalSales").text(amount);
+        };
+        function GetDiscountedAmount() {
+            var grossAmount = $("#NetAmount").val();
+            var discountAmount = $("#Discount").val();
+            var amount = grossAmount - discountAmount;
+            $("#TotalSales").val(amount);
+            $("#TotalSales").text(amount);
+
+        }
+        $("#AddItem").on("click", "#DeleteButton", function () {
+            $(this).closest("tr").remove();
+        });
+
+
+        function saveData() {
+            debugger;
+            if ((self.SalesList().length) == 0) {
+                return alert("Enter Details");
+            }
+
+            var master = {
+                SaleNo: $("#SalesNo").val(),
+                NetAmount: $("#NetAmount").val(),
+                Discount: $("#Discount").val(),
+                TotalSales: $("#TotalSales").val()
+            }
+            var data = {
+                Master: master,
+                Details: self.SalesList()
+            }
+            $.post("/Sales/SalesPost", data)
+                .done(function (result) {
+                    alert('Sales Completed');
+                });
+            window.location.href = "/Sales/Index";
+        }
+
+
+    </script>
+}

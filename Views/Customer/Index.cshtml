@@ -1,0 +1,35 @@
+﻿@model List<CustomerSales.ViewModel.CustomerViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<a href="Customer/Add">Create New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(x => item.CustomerName)</td>
+                <td>@Html.DisplayFor(x => item.CustomerAddress)</td>
+                <td>@Html.DisplayFor(x => item.ContactNumber)</td>
+                <td>
+                    <a href="@Url.Action("Add" , new {item.Id})">Update</a>
+                    <a href="@Url.Action("Delete", new {item.Id})">Delete</a>
+
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>

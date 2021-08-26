@@ -1,0 +1,42 @@
+﻿@model List<CustomerSales.ViewModel.ItemViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<a href="Item/Add">Create New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Item Description</th>
+            <th>Item Quantity</th>
+            <th>Item Rate</th>
+            <th>Rate Description</th>
+            <th>Total Item</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(x => item.ItemName)</td>
+                <td>@Html.DisplayFor(x => item.ItemDescription)</td>
+                <td>@Html.DisplayFor(x => item.ItemQuantity)</td>
+                <td>@Html.DisplayFor(x => item.ItemRate)</td>
+                <td>@Html.DisplayFor(x => item.ItemRateDescription)</td>
+                <td>@Html.DisplayFor(x => item.ItemTotal)</td>
+             
+                <td>
+                    <a href="@Url.Action("Add" , new {item.Id})">Update</a>
+                    <a href="@Url.Action("Delete", new {item.Id})">Delete</a>
+
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
